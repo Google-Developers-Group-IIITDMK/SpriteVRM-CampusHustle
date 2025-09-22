@@ -1,0 +1,4 @@
+repository "CampusHustle/CampusHustle@13469769819908@cloud"
+  path "/"
+    br "/main"
+    co "/main"

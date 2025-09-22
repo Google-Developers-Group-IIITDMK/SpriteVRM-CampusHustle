@@ -1,0 +1,22 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+UserSettings/
+
+# Visual Studio / IDE files
+.vscode/
+*.sln
+*.csproj
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+
+# Ignore other auto-generated stuff
+*.log
+*.tmp
