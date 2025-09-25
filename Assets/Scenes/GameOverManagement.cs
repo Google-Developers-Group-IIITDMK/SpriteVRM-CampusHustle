@@ -10,7 +10,7 @@ public class GameOverManager : MonoBehaviour
 
     public void BackToMenu()
     {
-        SceneManager.LoadScene("main menu"); // go back to menu
+        SceneManager.LoadScene("MainMenu"); // go back to menu
     }
 }
 
