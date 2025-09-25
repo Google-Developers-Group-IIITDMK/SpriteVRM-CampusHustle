@@ -5,7 +5,7 @@ public class GameOverManager : MonoBehaviour
 {
     public void RetryGame()
     {
-        SceneManager.LoadScene("SampleScene"); // restart main game
+        SceneManager.LoadScene("MainGame"); // restart main game
     }
 
     public void BackToMenu()
