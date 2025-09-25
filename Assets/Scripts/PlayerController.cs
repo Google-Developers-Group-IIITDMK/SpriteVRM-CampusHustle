@@ -12,59 +12,113 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Double Jump Settings")]
-    [SerializeField] private int extraJumpsAllowed = 1;  // How many extra jumps in air
+    [SerializeField] private int extraJumpsAllowed = 1;  
     private int extraJumpsRemaining;
+
+    [Header("Daydream (Girlfriend) Settings")]
+    [SerializeField] private float floatSpeedX = 0.2f;     // super tiny right drift
+    [SerializeField] private float floatSpeedY = 120f;     // very high upward drift
+    [SerializeField] private float daydreamDuration = 10f; // float for 10 seconds
+    private bool isDaydreaming = false;
+    private float daydreamTimer;
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private float defaultGravity;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
+        defaultGravity = rb.gravityScale;
     }
 
     private void Update()
     {
-        HandleJump();
+        if (!isDaydreaming)
+            HandleJump();
+
+        HandleDaydreamTimer();
     }
 
     private void FixedUpdate()
     {
-        AutoRun();
+        if (!isDaydreaming)
+        {
+            AutoRun();
+        }
+        else
+        {
+            // Dreamy float motion: almost straight up, tiny right drift
+            rb.linearVelocity = new Vector2(floatSpeedX, floatSpeedY);
+        }
     }
 
     private void AutoRun()
     {
-        // Always move right automatically
         rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
     }
 
     private void HandleJump()
     {
-        // Detect ground
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Reset extra jumps when touching ground
         if (isGrounded)
         {
             extraJumpsRemaining = extraJumpsAllowed;
         }
 
-        // Jump input
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (isGrounded) // Normal jump
+            if (isGrounded)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-            else if (extraJumpsRemaining > 0) // Double jump
+            else if (extraJumpsRemaining > 0)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // reset Y velocity for consistent height
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 extraJumpsRemaining--;
             }
         }
+    }
+
+    private void HandleDaydreamTimer()
+    {
+        if (isDaydreaming)
+        {
+            daydreamTimer -= Time.deltaTime;
+
+            if (daydreamTimer <= 0f)
+            {
+                EndDaydream();
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("GirlFriend"))
+        {
+            StartDaydream();
+        }
+    }
+
+    private void StartDaydream()
+    {
+        isDaydreaming = true;
+        daydreamTimer = daydreamDuration;
+
+        rb.gravityScale = 0f;   // disable gravity
+        rb.linearVelocity = Vector2.zero;
+
+        // 👉 Optional: trigger dreamy animation/particles here
+    }
+
+    private void EndDaydream()
+    {
+        isDaydreaming = false;
+        rb.gravityScale = defaultGravity;  // restore gravity
     }
 
     private void OnDrawGizmosSelected()
