@@ -3,12 +3,19 @@ using UnityEngine;
 public class FollowCamera : MonoBehaviour
 {
     [Header("Target Settings")]
-    [SerializeField] private Transform target;       // Player to follow
+    [SerializeField] private Transform target;       
 
     [Header("Camera Settings")]
-    [SerializeField] private float smoothSpeed = 0.125f;   // smoothing factor
-    [SerializeField] private Vector3 offset = new Vector3(3f, 1f, -10f); // camera offset from player
-    [SerializeField] private bool lockY = true;             // lock Y axis if true
+    [SerializeField] private float smoothSpeed = 0.2f;   
+    [SerializeField] private Vector3 offset = new Vector3(3f, 1f, -10f); 
+
+    private PlayerController playerController;
+
+    private void Awake()
+    {
+        if (target != null)
+            playerController = target.GetComponent<PlayerController>();
+    }
 
     private void LateUpdate()
     {
@@ -16,13 +23,21 @@ public class FollowCamera : MonoBehaviour
 
         Vector3 desiredPosition = target.position + offset;
 
-        if (lockY)
+        // Smooth X follow
+        float smoothedX = Mathf.Lerp(transform.position.x, desiredPosition.x, smoothSpeed);
+
+        // Smooth Y follow, snap if daydreaming
+        float smoothedY;
+        if (playerController != null && playerController.IsDaydreaming())
         {
-            desiredPosition.y = transform.position.y; // keep Y fixed
+            smoothedY = desiredPosition.y; // snap instantly
+        }
+        else
+        {
+            smoothedY = Mathf.Lerp(transform.position.y, desiredPosition.y, smoothSpeed);
         }
 
-        // Smoothly interpolate from current position to desired position
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothedPosition;
+        // Apply final position
+        transform.position = new Vector3(smoothedX, smoothedY, desiredPosition.z);
     }
 }

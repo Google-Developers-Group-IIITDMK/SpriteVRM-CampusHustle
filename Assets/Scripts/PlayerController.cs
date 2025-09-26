@@ -16,8 +16,8 @@ public class PlayerController : MonoBehaviour
     private int extraJumpsRemaining;
 
     [Header("Daydream (Girlfriend) Settings")]
-    [SerializeField] private float floatSpeedX = 0.2f;     // super tiny right drift
-    [SerializeField] private float floatSpeedY = 120f;     // very high upward drift
+    [SerializeField] private float floatSpeedX = 0.5f;     // very slow right drift
+    [SerializeField] private float floatSpeedY = 250f;     // super high upward drift
     [SerializeField] private float daydreamDuration = 10f; // float for 10 seconds
     private bool isDaydreaming = false;
     private float daydreamTimer;
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Dreamy float motion: almost straight up, tiny right drift
+            // Dreamy float motion: slow right, very high up
             rb.linearVelocity = new Vector2(floatSpeedX, floatSpeedY);
         }
     }
@@ -96,15 +96,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("GirlFriend"))
-        {
-            StartDaydream();
-        }
-    }
-
-    private void StartDaydream()
+    public void StartDaydream()
     {
         isDaydreaming = true;
         daydreamTimer = daydreamDuration;
@@ -119,6 +111,12 @@ public class PlayerController : MonoBehaviour
     {
         isDaydreaming = false;
         rb.gravityScale = defaultGravity;  // restore gravity
+    }
+
+    // Public getter for camera
+    public bool IsDaydreaming()
+    {
+        return isDaydreaming;
     }
 
     private void OnDrawGizmosSelected()

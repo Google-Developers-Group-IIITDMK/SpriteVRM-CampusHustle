@@ -2,38 +2,28 @@ using UnityEngine;
 
 public class GirlfriendBoost : MonoBehaviour
 {
-    public float boostForce = 10f;      // Upward force
-    public float forwardForce = 5f;     // Horizontal distance
+    [Header("Boost Settings")]
+    public float floatSpeedX = 0.5f;      // very slow right drift
+    public float floatSpeedY = 250f;      // strong upward drift
+    public float daydreamDuration = 10f;  // how long the float lasts
+
     private bool isBoosting = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") && !isBoosting)
         {
-            Rigidbody2D rb = collision.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            PlayerController pc = collision.GetComponent<PlayerController>();
+            if (pc != null)
             {
                 isBoosting = true;
 
-                // Reset velocity (now linearVelocity in Unity 6+)
-                rb.linearVelocity = Vector2.zero;
+                // tell player to start daydream mode
+                pc.StartDaydream();
 
-                // Apply projectile-like force
-                rb.AddForce(new Vector2(forwardForce, boostForce), ForceMode2D.Impulse);
-
-                // Start coroutine for landing after 1 second
-                StartCoroutine(LandAfterTime(rb, 1.0f));
+                // (Optional) disable girlfriend sprite after collision
+                // gameObject.SetActive(false);
             }
         }
-    }
-
-    private System.Collections.IEnumerator LandAfterTime(Rigidbody2D rb, float time)
-    {
-        yield return new WaitForSeconds(time);
-
-        // Stop vertical motion, keep running horizontally
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-
-        isBoosting = false;
     }
 }
