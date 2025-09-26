@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 06db3a282470e0d46ae92ad49f9c3597
+guid: b19f3123f74204d43adabb32862de1e0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3470199254039582324
-    second: TileFinal_0
+      213: 3836117400354746108
+    second: WhatsApp Image 2025-09-26 at 14.21.59_f25a7ef5_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -47,11 +47,11 @@ TextureImporter:
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
-  spriteExtrude: 4
+  spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 1500
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TileFinal_0
+      name: WhatsApp Image 2025-09-26 at 14.21.59_f25a7ef5_0
       rect:
         serializedVersion: 2
-        x: 93
-        y: 175
-        width: 1354
-        height: 535
+        x: 0
+        y: 0
+        width: 1024
+        height: 1024
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 3, y: 0, z: 0, w: 0}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c8925231a2067dfc0800000000000000
-      internalID: -3470199254039582324
+      spriteID: cfee6d47370ac3530800000000000000
+      internalID: 3836117400354746108
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d0e4ebda99032b4459e931a2832eaf2a
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      TileFinal_0: -3470199254039582324
+      WhatsApp Image 2025-09-26 at 14.21.59_f25a7ef5_0: 3836117400354746108
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
