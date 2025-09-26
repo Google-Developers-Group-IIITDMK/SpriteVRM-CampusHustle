@@ -15,10 +15,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int extraJumpsAllowed = 1;  
     private int extraJumpsRemaining;
 
-    [Header("Daydream (Girlfriend) Settings")]
-    [SerializeField] private float floatSpeedX = 0.5f;     // very slow right drift
-    [SerializeField] private float floatSpeedY = 250f;     // super high upward drift
-    [SerializeField] private float daydreamDuration = 10f; // float for 10 seconds
+    [Header("Daydream (Hallucination) Settings")]
+    [SerializeField] private float floatSpeedX = 0.5f;       // tiny horizontal sway
+    [SerializeField] private float floatSpeedY = 0.2f;         // slow upward drift
+    [SerializeField] private float minDaydreamDuration = 7f;
+    [SerializeField] private float maxDaydreamDuration = 10f;
+    [SerializeField] private float wobbleFrequencyX = 2f;
+    [SerializeField] private float wobbleFrequencyY = 2f;
+    [SerializeField] private float tiltAngleAmount = 5f;   // rotation wobble
+
+    private float daydreamStartY;
+    [SerializeField] private float maxFloatHeight = 0.5f; // max upward drift from start
+
+
     private bool isDaydreaming = false;
     private float daydreamTimer;
 
@@ -43,15 +52,27 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!isDaydreaming)
+        if (isDaydreaming)
+        {
+            // Horizontal wobble
+            float dizzyX = floatSpeedX * Mathf.Sin(Time.time * wobbleFrequencyX);
+
+            // Vertical motion: only allow small upward drift
+            float targetY = daydreamStartY + maxFloatHeight;
+            float dizzyY = Mathf.Min(floatSpeedY + floatSpeedY * 0.3f * Mathf.Sin(Time.time * wobbleFrequencyY),
+                                    targetY - transform.position.y);
+
+            rb.linearVelocity = new Vector2(dizzyX, dizzyY);
+
+            // Gentle rotation
+            rb.rotation = tiltAngleAmount * Mathf.Sin(Time.time * wobbleFrequencyX);
+        }
+
+        else
         {
             AutoRun();
         }
-        else
-        {
-            // Dreamy float motion: slow right, very high up
-            rb.linearVelocity = new Vector2(floatSpeedX, floatSpeedY);
-        }
+
     }
 
     private void AutoRun()
@@ -64,14 +85,13 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (isGrounded)
-        {
             extraJumpsRemaining = extraJumpsAllowed;
-        }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (isGrounded)
             {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
             else if (extraJumpsRemaining > 0)
@@ -88,7 +108,6 @@ public class PlayerController : MonoBehaviour
         if (isDaydreaming)
         {
             daydreamTimer -= Time.deltaTime;
-
             if (daydreamTimer <= 0f)
             {
                 EndDaydream();
@@ -96,27 +115,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Default daydream using inspector values
     public void StartDaydream()
     {
         isDaydreaming = true;
-        daydreamTimer = daydreamDuration;
+        daydreamTimer = Random.Range(minDaydreamDuration, maxDaydreamDuration);
 
-        rb.gravityScale = 0f;   // disable gravity
+        rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
 
-        // 👉 Optional: trigger dreamy animation/particles here
+        daydreamStartY = transform.position.y; // record start height
+    }
+
+
+    // Configurable daydream (used by GirlfriendBoost)
+    public void StartDaydream(float fx, float fy, float duration)
+    {
+        isDaydreaming = true;
+        daydreamTimer = duration;
+
+        floatSpeedX = fx;
+        floatSpeedY = fy;
+
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector2.zero;
     }
 
     private void EndDaydream()
     {
         isDaydreaming = false;
-        rb.gravityScale = defaultGravity;  // restore gravity
-    }
-
-    // Public getter for camera
-    public bool IsDaydreaming()
-    {
-        return isDaydreaming;
+        rb.gravityScale = defaultGravity;
+        rb.rotation = 0f; // reset rotation after daydream
     }
 
     private void OnDrawGizmosSelected()
@@ -126,5 +155,11 @@ public class PlayerController : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
+    }
+
+    // Optional getter for other scripts
+    public bool IsDaydreaming()
+    {
+        return isDaydreaming;
     }
 }
