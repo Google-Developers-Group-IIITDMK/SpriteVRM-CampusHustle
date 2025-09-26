@@ -2,42 +2,30 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour
 {
-    [Header("Target Settings")]
-    [SerializeField] private Transform target;       
+    [Header("Target")]
+    [SerializeField] private Transform player;
 
-    [Header("Camera Settings")]
-    [SerializeField] private float smoothSpeed = 0.2f;   
-    [SerializeField] private Vector3 offset = new Vector3(3f, 1f, -10f); 
+    [Header("Follow Settings")]
+    [SerializeField] private float followSpeed = 8f; // higher = snappier
+    [SerializeField] private Vector3 offset = new Vector3(0f, 1.5f, -10f);
 
-    private PlayerController playerController;
-
-    private void Awake()
-    {
-        if (target != null)
-            playerController = target.GetComponent<PlayerController>();
-    }
+    [Header("Daydream Y Follow")]
+    public bool isDaydreaming = false;
 
     private void LateUpdate()
     {
-        if (target == null) return;
+        if (player == null) return;
 
-        Vector3 desiredPosition = target.position + offset;
+        Vector3 targetPos = transform.position;
 
-        // Smooth X follow
-        float smoothedX = Mathf.Lerp(transform.position.x, desiredPosition.x, smoothSpeed);
+        // Always follow player's X
+        targetPos.x = player.position.x + offset.x;
 
-        // Smooth Y follow, snap if daydreaming
-        float smoothedY;
-        if (playerController != null && playerController.IsDaydreaming())
-        {
-            smoothedY = desiredPosition.y; // snap instantly
-        }
-        else
-        {
-            smoothedY = Mathf.Lerp(transform.position.y, desiredPosition.y, smoothSpeed);
-        }
+        // Follow Y only while daydreaming
+        if (isDaydreaming)
+            targetPos.y = player.position.y + offset.y;
 
-        // Apply final position
-        transform.position = new Vector3(smoothedX, smoothedY, desiredPosition.z);
+        // Smoothly move camera
+        transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed * Time.deltaTime);
     }
 }
