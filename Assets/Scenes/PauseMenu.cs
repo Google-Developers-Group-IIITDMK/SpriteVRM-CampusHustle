@@ -1,44 +1,55 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public Text finalScoreText;
+    public GameObject pauseMenuUI;   // Assign Pause Menu panel in Inspector
+    public static bool GameIsPaused = false;
 
-    public void Start()
+    void Update()
     {
-        // Show score only if references exist
-        if (finalScoreText != null && GameManager.Instance != null)
+        // Toggle pause with Escape
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            finalScoreText.text = "Score: " + GameManager.Instance.score;
+            if (GameIsPaused)
+                Resume();
+            else
+                Pause();
         }
     }
 
-    public void Retry()
+    // Resume Game
+    public void Resume()
     {
-        if (GameManager.Instance != null)
-            GameManager.Instance.ResetForNewGame();
-
-        SceneManager.LoadScene("MainGame");
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;   // Resume time
+        GameIsPaused = false;
     }
 
+    // Pause Game
+    void Pause()
+    {
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;   // Freeze time
+        GameIsPaused = true;
+    }
+
+    // Back to Main Menu
     public void BackToMenu()
     {
-        if (GameManager.Instance != null)
-            GameManager.Instance.ResetForNewGame();
-
+        Time.timeScale = 1f;  // Ensure time runs again
         SceneManager.LoadScene("MainMenu");
     }
 
+    // Quit Game
     public void QuitGame()
     {
-        Debug.Log("Quit button pressed!"); // Useful for testing in Editor
+        Debug.Log("Quit button pressed!");
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // Stops play mode in the Editor
+        UnityEditor.EditorApplication.isPlaying = false; // Stops play mode in Editor
 #else
-        Application.Quit(); // Quits the game in a build
+        Application.Quit(); // Quits the game in build
 #endif
     }
 }
