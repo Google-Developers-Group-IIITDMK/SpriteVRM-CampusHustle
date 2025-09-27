@@ -3,13 +3,12 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    [Header("Pause Menu UI")]
-    public GameObject pauseMenuUI; // assign your Pause Menu Canvas here
+    // ---------------- Scene Loading ----------------
 
     // Load Main Game from Main Menu
     public void LoadMainGame()
     {
-        Time.timeScale = 1f; // ensure game is running
+        Time.timeScale = 1f; 
         SceneManager.LoadScene("MainGame");
     }
 
@@ -20,7 +19,7 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene("GameOver");
     }
 
-    // Load Main Menu from Game Over or anywhere
+    // Load Main Menu from anywhere
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
@@ -43,21 +42,23 @@ public class SceneLoader : MonoBehaviour
 
     // ---------------- Pause / Continue ----------------
 
-    // Pause the game
+    // Open Pause Menu as a separate scene (additive)
     public void PauseGame()
     {
-        if (pauseMenuUI != null)
-            pauseMenuUI.SetActive(true);  // show Pause Menu
+        Time.timeScale = 0f; // freeze gameplay
 
-        Time.timeScale = 0f;            // stop gameplay
+        // Prevent loading PauseMenu multiple times
+        if (!SceneManager.GetSceneByName("PauseMenu").isLoaded)
+            SceneManager.LoadScene("PauseMenu", LoadSceneMode.Additive);
     }
 
-    // Continue the game
+    // Close Pause Menu and resume gameplay
     public void ContinueGame()
     {
-        if (pauseMenuUI != null)
-            pauseMenuUI.SetActive(false); // hide Pause Menu
+        Time.timeScale = 1f; // resume gameplay
 
-        Time.timeScale = 1f;            // resume gameplay
+        // unload PauseMenu if it’s loaded
+        if (SceneManager.GetSceneByName("PauseMenu").isLoaded)
+            SceneManager.UnloadSceneAsync("PauseMenu");
     }
 }
