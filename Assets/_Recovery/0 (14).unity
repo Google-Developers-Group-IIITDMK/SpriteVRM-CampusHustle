@@ -756,8 +756,8 @@ Transform:
   m_GameObject: {fileID: 331875470}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.9887, y: -2.0323, z: 0}
-  m_LocalScale: {x: 0.37975338, y: 0.30457875, z: 1}
+  m_LocalPosition: {x: 22.09, y: -1.6, z: 0}
+  m_LocalScale: {x: 0.46629834, y: 0.4306217, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1491,9 +1491,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 519420034}
-        m_TargetAssemblyTypeName: PauseButton, Assembly-CSharp
-        m_MethodName: LoadPauseMenu
+      - m_Target: {fileID: 62417760}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: PauseGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1673,7 +1673,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.0017888844, y: -0.027309984}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0.0019999999, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1683,7 +1683,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9105552, y: 0.46472}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &857316443
 SpriteRenderer:
@@ -1752,8 +1752,8 @@ Transform:
   m_GameObject: {fileID: 857316441}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.6486, y: -4.7125, z: 0}
-  m_LocalScale: {x: 40.322533, y: 9.737061, z: 1}
+  m_LocalPosition: {x: 8.6, y: -3.5, z: 0}
+  m_LocalScale: {x: 40.213955, y: 0.9641798, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
