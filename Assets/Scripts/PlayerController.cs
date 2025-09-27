@@ -17,16 +17,15 @@ public class PlayerController : MonoBehaviour
 
     [Header("Daydream (Hallucination) Settings")]
     [SerializeField] private float floatSpeedX = 0.5f;       // tiny horizontal sway
-    [SerializeField] private float floatSpeedY = 0.2f;         // slow upward drift
+    [SerializeField] private float floatSpeedY = 0.2f;       // slow upward drift
     [SerializeField] private float minDaydreamDuration = 7f;
     [SerializeField] private float maxDaydreamDuration = 10f;
     [SerializeField] private float wobbleFrequencyX = 2f;
     [SerializeField] private float wobbleFrequencyY = 2f;
-    [SerializeField] private float tiltAngleAmount = 5f;   // rotation wobble
+    [SerializeField] private float tiltAngleAmount = 5f;     // rotation wobble
 
     private float daydreamStartY;
-    [SerializeField] private float maxFloatHeight = 0.5f; // max upward drift from start
-
+    [SerializeField] private float maxFloatHeight = 0.5f;    // max upward drift from start
 
     private bool isDaydreaming = false;
     private float daydreamTimer;
@@ -35,11 +34,17 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private float defaultGravity;
 
+    // ✅ Reference to camera follow script
+    private FollowCamera followCamera;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         defaultGravity = rb.gravityScale;
+
+        // link the main camera’s FollowCamera script
+        followCamera = Camera.main.GetComponent<FollowCamera>();
     }
 
     private void Update()
@@ -59,7 +64,7 @@ public class PlayerController : MonoBehaviour
 
             // Vertical motion: only allow small upward drift
             float targetY = daydreamStartY + maxFloatHeight;
-            float dizzyY = Mathf.Min(floatSpeedY + floatSpeedY * 0.3f * Mathf.Sin(Time.time * wobbleFrequencyY),
+            float dizzyY = Mathf.Min(floatSpeedY + floatSpeedY * 0.7f * Mathf.Sin(Time.time * wobbleFrequencyY),
                                     targetY - transform.position.y);
 
             rb.linearVelocity = new Vector2(dizzyX, dizzyY);
@@ -67,12 +72,10 @@ public class PlayerController : MonoBehaviour
             // Gentle rotation
             rb.rotation = tiltAngleAmount * Mathf.Sin(Time.time * wobbleFrequencyX);
         }
-
         else
         {
             AutoRun();
         }
-
     }
 
     private void AutoRun()
@@ -125,8 +128,10 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
 
         daydreamStartY = transform.position.y; // record start height
-    }
 
+        // ✅ Tell camera to follow Y now
+        if (followCamera != null) followCamera.isDaydreaming = true;
+    }
 
     // Configurable daydream (used by GirlfriendBoost)
     public void StartDaydream(float fx, float fy, float duration)
@@ -139,6 +144,9 @@ public class PlayerController : MonoBehaviour
 
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
+
+        // ✅ Tell camera to follow Y now
+        if (followCamera != null) followCamera.isDaydreaming = true;
     }
 
     private void EndDaydream()
@@ -146,6 +154,9 @@ public class PlayerController : MonoBehaviour
         isDaydreaming = false;
         rb.gravityScale = defaultGravity;
         rb.rotation = 0f; // reset rotation after daydream
+
+        // ✅ Stop camera following Y
+        if (followCamera != null) followCamera.isDaydreaming = false;
     }
 
     private void OnDrawGizmosSelected()
