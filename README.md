@@ -89,7 +89,3 @@ Your mission: *Survive and reach the hostel before time runs out!*
 - Expand campus map  
 
 ---
-
-## 📜 License  
-
-This project is licensed under [MIT License](LICENSE).
