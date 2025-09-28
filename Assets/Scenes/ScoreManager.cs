@@ -12,7 +12,7 @@ public class ScoreManager : MonoBehaviour
     int highscore = 0;
     void Start()
     {
-        scoreText.text = score.ToString() + "POINTS";
+        scoreText.text = score.ToString() + " POINTS";
         highscoreText.text = "HIGHSCORE: " + highscore.ToSafeString();
     }
 
