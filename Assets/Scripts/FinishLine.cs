@@ -15,6 +15,7 @@ public class FinishLine : MonoBehaviour
             {
                 levelCompleteUI.SetActive(true);
             }
+            
 
             // Stop player movement (optional)
             other.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;

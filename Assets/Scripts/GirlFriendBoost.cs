@@ -8,6 +8,9 @@ public class GirlfriendBoost : MonoBehaviour
     public float minDuration = 7f;
     public float maxDuration = 10f;
 
+    [Header("Audio Settings")]
+    public AudioSource musicSource;          // Assign the music AudioSource in Inspector
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -15,15 +18,19 @@ public class GirlfriendBoost : MonoBehaviour
             PlayerController pc = collision.GetComponent<PlayerController>();
             if (pc != null)
             {
-                // tell player to start daydream mode with settings from this object
+                // Start daydream mode
                 float randomDuration = Random.Range(minDuration, maxDuration);
                 pc.StartDaydream(floatSpeedX, floatSpeedY, randomDuration);
 
-                // (Optional) disable girlfriend sprite after collision
-                // gameObject.SetActive(false);
+                // Play music if assigned
+                if (musicSource != null && !musicSource.isPlaying)
+                {
+                    musicSource.Play();
+                }
 
-                // (Optional) destroy girlfriend object
-                // Destroy(gameObject);
+                // Optional: disable or destroy girlfriend object
+                // gameObject.SetActive(false);
+                Destroy(gameObject);
             }
         }
     }
