@@ -5,5 +5,5 @@ public class PauseButton : MonoBehaviour
 {
     public void LoadPauseMenu()
     {
-        SceneManager.LoadScene("Pause Menu");
+        SceneManager.LoadScene("PauseMenu");
     } }
