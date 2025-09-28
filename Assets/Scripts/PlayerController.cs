@@ -168,4 +168,36 @@ public class PlayerController : MonoBehaviour
     {
         return isDaydreaming;
     }
+
+    // ✅ Collectibles detection
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Collectible collectible = collision.GetComponent<Collectible>();
+        if (collectible == null) return;
+
+        switch (collectible.type)
+        {
+            case CollectibleType.PositiveScore:
+                GameManager.Instance.AddScore(10);
+                break;
+
+            case CollectibleType.NegativeScore:
+                GameManager.Instance.AddScore(-10);
+                break;
+
+            case CollectibleType.MessFood:
+                GameManager.Instance.TakeDamage(2);
+                break;
+
+            case CollectibleType.Biryani:
+                GameManager.Instance.TakeDamage(-2);
+                break;
+
+            case CollectibleType.Rock:
+                GameManager.Instance.TakeDamage(5);
+                break;
+        }
+
+        Destroy(collision.gameObject);
+    }
 }
