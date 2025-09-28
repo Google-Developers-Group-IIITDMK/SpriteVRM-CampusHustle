@@ -4,7 +4,7 @@ public class GirlfriendBoost : MonoBehaviour
 {
     [Header("Boost Settings")]
     public float floatSpeedX = 0.2f;        // very tiny right drift
-    public float floatSpeedY = 8f;          // strong upward drift
+    public float floatSpeedY = 4f;          // strong upward drift
     public float minDuration = 7f;
     public float maxDuration = 10f;
 

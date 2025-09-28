@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;   // Auto-run speed
+    [SerializeField] private float moveSpeed = 5f;   
     [SerializeField] private float jumpForce = 12f;
 
     [Header("Ground Check Settings")]
@@ -12,30 +12,28 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Double Jump Settings")]
-    [SerializeField] private int extraJumpsAllowed = 1;  
+    [SerializeField] private int extraJumpsAllowed = 1;
     private int extraJumpsRemaining;
 
     [Header("Daydream (Hallucination) Settings")]
-    [SerializeField] private float floatSpeedX = 0.5f;       // tiny horizontal sway
-    [SerializeField] private float floatSpeedY = 0.2f;       // slow upward drift
+    [SerializeField] private float floatSpeedX = 0.5f;
+    [SerializeField] private float driftSpeedX = 0.8f;
+    [SerializeField] private float floatSpeedY = 0.2f;
     [SerializeField] private float minDaydreamDuration = 7f;
     [SerializeField] private float maxDaydreamDuration = 10f;
     [SerializeField] private float wobbleFrequencyX = 2f;
     [SerializeField] private float wobbleFrequencyY = 2f;
-    [SerializeField] private float tiltAngleAmount = 5f;     // rotation wobble
-
-    private float daydreamStartY;
-    [SerializeField] private float maxFloatHeight = 0.5f;    // max upward drift from start
+    [SerializeField] private float tiltAngleAmount = 5f;
 
     private bool isDaydreaming = false;
     private float daydreamTimer;
 
     private Rigidbody2D rb;
-    private bool isGrounded;
     private float defaultGravity;
 
-    // ✅ Reference to camera follow script
     private FollowCamera followCamera;
+
+    public bool IsGrounded { get; private set; }  
 
     private void Awake()
     {
@@ -43,7 +41,6 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
         defaultGravity = rb.gravityScale;
 
-        // link the main camera’s FollowCamera script
         followCamera = Camera.main.GetComponent<FollowCamera>();
     }
 
@@ -57,25 +54,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        GroundUpdate();
+
         if (isDaydreaming)
-        {
-            // Horizontal wobble
-            float dizzyX = floatSpeedX * Mathf.Sin(Time.time * wobbleFrequencyX);
-
-            // Vertical motion: only allow small upward drift
-            float targetY = daydreamStartY + maxFloatHeight;
-            float dizzyY = Mathf.Min(floatSpeedY + floatSpeedY * 0.7f * Mathf.Sin(Time.time * wobbleFrequencyY),
-                                    targetY - transform.position.y);
-
-            rb.linearVelocity = new Vector2(dizzyX, dizzyY);
-
-            // Gentle rotation
-            rb.rotation = tiltAngleAmount * Mathf.Sin(Time.time * wobbleFrequencyX);
-        }
+            HandleDaydreamMovement();
         else
-        {
             AutoRun();
-        }
     }
 
     private void AutoRun()
@@ -85,14 +69,12 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
-        if (isGrounded)
+        if (IsGrounded)
             extraJumpsRemaining = extraJumpsAllowed;
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (isGrounded)
+            if (IsGrounded)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -112,13 +94,25 @@ public class PlayerController : MonoBehaviour
         {
             daydreamTimer -= Time.deltaTime;
             if (daydreamTimer <= 0f)
-            {
                 EndDaydream();
-            }
         }
     }
 
-    // Default daydream using inspector values
+    private void HandleDaydreamMovement()
+    {
+        float driftX = driftSpeedX;
+        float wobbleX = floatSpeedX * Mathf.Sin(Time.time * wobbleFrequencyX);
+
+        float baseUp = floatSpeedY;
+        float wobbleY = floatSpeedY * 0.5f * Mathf.Sin(Time.time * wobbleFrequencyY);
+
+        float dizzyX = driftX + wobbleX;
+        float dizzyY = baseUp + wobbleY;
+
+        rb.linearVelocity = new Vector2(dizzyX, dizzyY);
+        rb.rotation = tiltAngleAmount * Mathf.Sin(Time.time * wobbleFrequencyX);
+    }
+
     public void StartDaydream()
     {
         isDaydreaming = true;
@@ -127,13 +121,10 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
 
-        daydreamStartY = transform.position.y; // record start height
-
-        // ✅ Tell camera to follow Y now
-        if (followCamera != null) followCamera.isDaydreaming = true;
+        if (followCamera != null)
+            followCamera.isDaydreaming = true;
     }
 
-    // Configurable daydream (used by GirlfriendBoost)
     public void StartDaydream(float fx, float fy, float duration)
     {
         isDaydreaming = true;
@@ -145,18 +136,23 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
 
-        // ✅ Tell camera to follow Y now
-        if (followCamera != null) followCamera.isDaydreaming = true;
+        if (followCamera != null)
+            followCamera.isDaydreaming = true;
     }
 
     private void EndDaydream()
     {
         isDaydreaming = false;
         rb.gravityScale = defaultGravity;
-        rb.rotation = 0f; // reset rotation after daydream
+        rb.rotation = 0f;
 
-        // ✅ Stop camera following Y
-        if (followCamera != null) followCamera.isDaydreaming = false;
+        if (followCamera != null)
+            followCamera.isDaydreaming = false;
+    }
+
+    private void GroundUpdate()
+    {
+        IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
     private void OnDrawGizmosSelected()
@@ -168,7 +164,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Optional getter for other scripts
     public bool IsDaydreaming()
     {
         return isDaydreaming;
